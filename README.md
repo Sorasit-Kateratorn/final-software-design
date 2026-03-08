@@ -61,3 +61,9 @@ If the server runs successfully, the Django project is working.
 
 ---
 
+
+### Evidence of CRUD Functionality
+
+
+[CRUD Functionality](https://docs.google.com/document/d/1MPPSM0sSq1NjJ2zlB2z-vb9CKjb0V_ytjwQRhGoYWus/edit?usp=sharing)
+
