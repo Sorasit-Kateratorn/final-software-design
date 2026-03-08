@@ -27,6 +27,11 @@ class Music(models.Model):
     duration_time = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=50, choices=GenerationStatus.choices, default=GenerationStatus.Pending)
+    prompt = models.ForeignKey("music.MusicPrompt", on_delete=models.CASCADE, related_name="musics")
+    user = models.ForeignKey("user.User", on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.title
 
 
 class MusicPrompt(models.Model):
@@ -34,3 +39,7 @@ class MusicPrompt(models.Model):
     genre = models.CharField(max_length=50, choices=Genre.choices)
     occasion = models.CharField(max_length=50, choices=Occasion.choices)
     created_at = models.DateTimeField(auto_now_add=True) 
+    
+    def __str__(self):
+        return self.title
+    
