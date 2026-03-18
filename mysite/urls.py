@@ -16,7 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from user.views import UserView
+from library.views import LibraryView
+from music.views import MusicView
+from musicprompt.views import MusicPromptView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('user/', UserView.as_view()),
+    path('user/<int:pk>', UserView.as_view()),
+    path('library/', LibraryView.as_view()),
+    path('library/<int:pk>', LibraryView.as_view()),
+    path('music/', MusicView.as_view()),
+    path('music/<int:pk>', MusicView.as_view()),
+    path('musicprompt/', MusicPromptView.as_view()),
+    path('musicprompt/<int:pk>', MusicPromptView.as_view())
 ]

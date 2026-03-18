@@ -2,31 +2,28 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import User
-from .serializers import UserSerializers
+from .models import MusicPrompt
+from .serializers import MusicPromptSerializers
 
-# CRUD = Create, Read, Update, Delete
-# Daily limit save it in cookie or session
 # Create your views here.
-class UserView(APIView):
+class MusicPromptView(APIView):
     def get(self, request, pk=None): # pk = primary key = id
         if pk:
             try:
-                user = User.objects.get(pk=pk) # get = get 1 record
-                serializer = UserSerializers(user)
+                library = MusicPrompt.objects.get(pk=pk) # get = get 1 record
+                serializer = MusicPromptSerializers(library)
             except:
                 return Response({}, status=status.HTTP_200_OK)
         else: #get all data in user table
-            users = User.objects.all()
-            serializer = UserSerializers(users, many=True)
+            libraries = MusicPrompt.objects.all()
+            serializer = MusicPromptSerializers(libraries, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
-        serializer = UserSerializers(data=request.data)
+        serializer = MusicPromptSerializers(data=request.data)
         
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        

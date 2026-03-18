@@ -1,13 +1,16 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+class User(AbstractUser):
+    class Role(models.TextChoices): # enum
+        USER = "User", "User"
+        ADMIN = "Admin", "Admin"
 
-# Create your models here.
-class User(models.Model):
-    username = models.CharField(max_length=200)
-    email = models.EmailField()
-    daily_generation_limit = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class Admin(User):
-    role = models.CharField(max_length=50)
+    role = models.CharField(max_length=5, choices=Role.choices, default=Role.USER)
+    
+    class Meta:
+        db_table = "users"
+        #ordering = ["username"]
+        
+    def __str__(self): 
+        return f"{self.username}({self.role})"
