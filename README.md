@@ -5,8 +5,8 @@ Follow these steps to run the project locally.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Sorasit-Kateratorn/software-design-exercise3.git
-cd software-design-exercise3
+git clone https://github.com/Sorasit-Kateratorn/final-software-design.git
+cd final-software-design
 ```
 
 ---
