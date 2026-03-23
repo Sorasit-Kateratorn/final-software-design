@@ -45,7 +45,15 @@ This will create the database schema based on Django models.
 
 ---
 
-### 5. Run the Development Server
+### 5. Create Superuser for Django Admin
+
+```bash
+python manage.py createsuperuser
+```
+
+---
+
+### 6. Run the Development Server
 
 ```bash
 python manage.py runserver
