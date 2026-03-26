@@ -75,3 +75,49 @@ If the server runs successfully, the Django project is working.
 
 [Link here](https://docs.google.com/document/d/1MPPSM0sSq1NjJ2zlB2z-vb9CKjb0V_ytjwQRhGoYWus/edit?usp=sharing)
 
+
+---
+
+
+| Method | Endpoint     | Description           |
+| ------ | ------------ | --------------------- |
+| GET    | `/user/`     | Retrieve all users    |
+| POST   | `/user/`     | Create a new user     |
+| GET    | `/user/{id}` | Retrieve a user by ID |
+| PUT    | `/user/{id}` | Update entire user    |
+| PATCH  | `/user/{id}` | Partially update user |
+| DELETE | `/user/{id}` | Delete user           |
+
+
+
+| Method | Endpoint        | Description              |
+| ------ | --------------- | ------------------------ |
+| GET    | `/library/`     | Retrieve all libraries   |
+| POST   | `/library/`     | Create a new library     |
+| GET    | `/library/{id}` | Retrieve a library by ID |
+| PUT    | `/library/{id}` | Update entire library    |
+| PATCH  | `/library/{id}` | Partially update library |
+| DELETE | `/library/{id}` | Delete library           |
+
+
+
+| Method | Endpoint      | Description            |
+| ------ | ------------- | ---------------------- |
+| GET    | `/music/`     | Retrieve all music     |
+| POST   | `/music/`     | Create new music       |
+| GET    | `/music/{id}` | Retrieve music by ID   |
+| PUT    | `/music/{id}` | Update entire music    |
+| PATCH  | `/music/{id}` | Partially update music |
+| DELETE | `/music/{id}` | Delete music           |
+
+
+| Method | Endpoint            | Description                   |
+| ------ | ------------------- | ----------------------------- |
+| GET    | `/musicprompt/`     | Retrieve all music prompts    |
+| POST   | `/musicprompt/`     | Create new music prompt       |
+| GET    | `/musicprompt/{id}` | Retrieve music prompt by ID   |
+| PUT    | `/musicprompt/{id}` | Update entire music prompt    |
+| PATCH  | `/musicprompt/{id}` | Partially update music prompt |
+| DELETE | `/musicprompt/{id}` | Delete music prompt           |
+
+
