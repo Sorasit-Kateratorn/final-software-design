@@ -1,15 +1,133 @@
-@import "tailwindcss";
-
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+:root {
+  --ams-green: #1EBA78;
+  --ams-green-hover: #199e65;
+  --ams-bg-color: #09090b;
+  --ams-card-bg: #121214;
+  --ams-border: #27272a;
+  --ams-text: #e4e4e7;
+  --ams-text-muted: #a1a1aa;
 }
 
-html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  background-color: var(--ams-bg-color);
+  color: var(--ams-text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  /* subtle radial gradient */
+  background-image: radial-gradient(circle at 50% 20%, rgba(30, 186, 120, 0.05) 0%, rgba(9, 9, 11, 1) 50%);
+  background-attachment: fixed;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+.text-brand {
+  color: var(--ams-green) !important;
+}
+
+/* Auth Cards */
+.auth-card {
+  background-color: var(--ams-card-bg);
+  border: 1px solid var(--ams-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  max-width: 420px;
+  width: 100%;
+}
+
+.auth-card-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: radial-gradient(circle at 10% 90%, rgba(30, 186, 120, 0.15) 0%, rgba(9, 9, 11, 0) 50%);
+}
+
+/* Forms & Inputs */
+.form-control, .form-control:focus, .form-select, .form-select:focus {
+  background-color: #1a1a1e !important;
+  border: 1px solid var(--ams-border) !important;
+  color: var(--ams-text) !important;
+  border-radius: 8px;
+}
+
+.form-control::placeholder {
+  color: var(--ams-text-muted);
+}
+
+.form-control:focus, .form-select:focus {
+  outline: none;
+  box-shadow: 0 0 0 0.25rem rgba(30, 186, 120, 0.15) !important;
+  border-color: var(--ams-green) !important;
+}
+
+/* Buttons */
+.btn-primary-brand {
+  background-color: var(--ams-green);
+  border: none;
+  color: #000;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary-brand:hover, .btn-primary-brand:focus, .btn-primary-brand:active {
+  background-color: var(--ams-green-hover) !important;
+  color: #000 !important;
+}
+
+.btn-outline-brand {
+  background-color: transparent;
+  border: 1px solid var(--ams-border);
+  color: var(--ams-text);
+  font-weight: 500;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.btn-outline-brand:hover {
+  background-color: #1a1a1e;
+  color: var(--ams-text);
+}
+
+/* Library Cards */
+.library-card {
+  background-color: var(--ams-card-bg);
+  border: 1px solid var(--ams-border);
+  border-radius: 12px;
+}
+
+.track-row {
+  background-color: #161619;
+  border: 1px solid var(--ams-border);
+  border-radius: 8px;
+  transition: border-color 0.2s;
+}
+
+.track-row:hover {
+  border-color: #3f3f46;
+}
+
+.icon-button {
+  background: transparent;
+  border: none;
+  color: var(--ams-text-muted);
+  transition: color 0.2s;
+}
+
+.icon-button:hover {
+  color: var(--ams-green);
+}
+
+/* Modals */
+.modal-content {
+  background-color: var(--ams-card-bg) !important;
+  border: 1px solid var(--ams-border) !important;
+  border-radius: 12px;
+}
+
+.modal-header {
+  border-bottom: none !important;
+}
+
+.modal-footer {
+  border-top: none !important;
 }
