@@ -23,7 +23,9 @@ env = environ.Env()
 
 # path to .env file
 environ.Env.read_env(os.path.join(BASE_DIR, '.env')) 
-#suno_api_key = env("SUNO_API_KEY") # access .env inside settings file
+
+SUNO_API_KEY = env("SUNO_API_KEY", default=None)
+GENERATOR_STRATEGY = env("GENERATOR_STRATEGY", default="mock")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/

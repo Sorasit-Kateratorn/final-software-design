@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import MusicPrompt
 from .serializers import MusicPromptSerializers
+from .strategies import get_generator_strategy
+from music.models import Music
 import os
 import requests as req
 
@@ -22,39 +24,34 @@ class MusicPromptView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
-        suno_api_key = os.getenv("SUNO_API_KEY")
         serializer = MusicPromptSerializers(data=request.data)
         if serializer.is_valid():
+            # Use Strategy Pattern
+            strategy = get_generator_strategy()
+            result = strategy.generate(request.data)
             
-            prompt_text = (
-                f"Generate a {request.data['genre']} song for a {request.data['occasion']} occasion "
-                f"with the title '{request.data['title']}'"
-            )
-            # Call suno api
-            headers = {
-                "Authorization": f"Bearer {suno_api_key}",
-                "Content-Type": "application/json"
-            }
-
-            suno_param = {
-                "customMode": True,
-                "instrumental": True,
-                "model": "V5_5",
-                "callBackUrl": "https://api.example.com/callback",
-                "prompt": prompt_text,
-                "style": request.data.get("genre"),
-                "title": request.data.get("title"),
-            }
             
-            response = req.post(
-            "https://api.sunoapi.org/api/v1/generate",
-            headers=headers,
-            json=suno_param
+            
+            # Assuming returning the API wrapper result
+            # We determine status according to whether it failed.
+            if "error" in result:
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+        
+            music_prompt = serializer.save() # save prompt
+            task_id = result.get("taskId") # Extract taskId safely
+            Music.objects.create(
+            title=request.data.get("title"),
+            genre=request.data.get("genre"),
+            duration_time=0,  # temporary
+            status=Music.GenerationStatus.PENDING,
+            task_id=task_id,
+            music_prompt=music_prompt
         )
             
             
-            #serializer.save()
-            return Response(response.json(), status=status.HTTP_201_CREATED)
+            
+            return Response(result, status=status.HTTP_201_CREATED)
+        
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -97,3 +94,38 @@ class MusicPromptView(APIView):
         musicprompt = get_object_or_404(MusicPrompt, pk=pk)
         musicprompt.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+class MusicPromptStatusView(APIView):
+    def get(self, request, task_id):
+        # Use Strategy Pattern
+        strategy = get_generator_strategy()
+        result = strategy.check_status(task_id)
+        
+        if "error" in result:
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            music = Music.objects.get(task_id=task_id)
+        except Music.DoesNotExist:
+            return Response(
+                {"error": "Music record not found for this task_id."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        result_status = result.get("status")
+
+        if result_status == "SUCCESS":
+            music.status = Music.GenerationStatus.COMPLETED
+            music.audio_url = result.get("audio_url")
+            music.save()
+
+        elif result_status == "FAILED":
+            music.status = Music.GenerationStatus.FAILED
+            music.save()
+
+        else:
+            music.status = Music.GenerationStatus.GENERATING
+            music.save()
+
+        return Response(result, status=status.HTTP_200_OK)

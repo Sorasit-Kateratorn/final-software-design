@@ -19,7 +19,7 @@ from django.urls import path
 from user.views import UserView
 from library.views import LibraryView
 from music.views import MusicView
-from musicprompt.views import MusicPromptView
+from musicprompt.views import MusicPromptView, MusicPromptStatusView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -30,5 +30,6 @@ urlpatterns = [
     path('music/', MusicView.as_view()),
     path('music/<int:pk>', MusicView.as_view()),
     path('musicprompt/', MusicPromptView.as_view()),
-    path('musicprompt/<int:pk>', MusicPromptView.as_view())
+    path('musicprompt/<int:pk>', MusicPromptView.as_view()),
+    path('musicprompt/status/<str:task_id>', MusicPromptStatusView.as_view()),
 ]

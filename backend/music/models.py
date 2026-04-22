@@ -27,6 +27,8 @@ class Music(models.Model):
     )
     library = models.ManyToManyField("library.Library", through="Playlist")
     # "app_name.ModelName"
+    audio_url = models.URLField(null=True, blank=True)
+    task_id = models.CharField(max_length=255, null=True, blank=True)
         
         
     class Meta:
