@@ -1,5 +1,5 @@
 import { Button } from "react-bootstrap";
-import { TrackRow, TrackData } from "./TrackRow";
+import { TrackRow, type TrackData } from "./TrackRow";
 
 interface LibraryCardProps {
     id: string;

@@ -4,6 +4,10 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import User
 from .serializers import UserSerializers
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.conf import settings
 
 # CRUD = Create, Read, Update, Delete
 # Daily limit save it in cookie or session
@@ -25,8 +29,11 @@ class UserView(APIView):
         serializer = UserSerializers(data=request.data)
         
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            user = serializer.save()
+            if 'password' in request.data:
+                user.set_password(request.data['password'])
+                user.save()
+            return Response(UserSerializers(user).data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
@@ -69,4 +76,63 @@ class UserView(APIView):
         user = get_object_or_404(User, pk=pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-        
+
+class GoogleLoginView(APIView):
+    def post(self, request):
+        token = request.data.get('credential')
+        if not token:
+            return Response({"detail": "Credential is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Verify the token with Google
+            idinfo = id_token.verify_oauth2_token(
+                token, 
+                google_requests.Request(), 
+                settings.GOOGLE_CLIENT_ID,
+                clock_skew_in_seconds=10
+            )
+
+            email = idinfo.get('email')
+            given_name = idinfo.get('given_name', '')
+            family_name = idinfo.get('family_name', '')
+            
+            if not email:
+                return Response({"detail": "Google token does not contain an email."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Check if user exists
+            user = User.objects.filter(email=email).first()
+            if not user:
+                # Create a new user
+                # We use email as username if username is not strictly required, or derive username from email.
+
+                base_username = email.split('@')[0]
+                username = base_username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+                
+                user = User(
+                    username=username,
+                    email=email,
+                    first_name=given_name,
+                    last_name=family_name
+                )
+                user.set_unusable_password()
+                user.save()
+
+            # Generate tokens
+            refresh = RefreshToken.for_user(user)
+
+            return Response({
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                'user': UserSerializers(user).data
+            }, status=status.HTTP_200_OK)
+
+        except ValueError as e:
+            # Invalid token
+            return Response({"detail": f"Invalid Google token: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            # Other errors 
+            return Response({"detail": f"Google authentication failed: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

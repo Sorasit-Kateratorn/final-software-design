@@ -72,13 +72,7 @@ export function Main() {
 
     return (
         <div className="d-flex flex-column min-vh-100">
-            <AppNavbar
-                rightElement={
-                    <button className="icon-button border rounded p-2 px-3 border-secondary" title="Profile">
-                        <i className="bi bi-person text-white"></i>
-                    </button>
-                }
-            />
+            <AppNavbar />
 
             <Container className="py-5">
                 <div className="mb-5">

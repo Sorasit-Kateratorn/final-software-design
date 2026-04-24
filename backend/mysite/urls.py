@@ -16,13 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from user.views import UserView
+from user.views import UserView, GoogleLoginView
 from library.views import LibraryView
 from music.views import MusicView
 from musicprompt.views import MusicPromptView, MusicPromptStatusView
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('auth/google/', GoogleLoginView.as_view()),
+    path('auth/login/', TokenObtainPairView.as_view()),
     path('user/', UserView.as_view()),
     path('user/<int:pk>', UserView.as_view()),
     path('library/', LibraryView.as_view()),

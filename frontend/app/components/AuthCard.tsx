@@ -11,6 +11,9 @@ interface AuthCardProps {
 export function AuthCard({ title, subtitle, children }: AuthCardProps) {
     return (
         <div className="auth-card-wrapper position-relative">
+            <Link to="/" className="btn btn-outline-secondary position-absolute top-0 start-0 m-4 d-flex align-items-center gap-2">
+                <i className="bi bi-arrow-left"></i> Back to Home
+            </Link>
             <div className="d-flex flex-column align-items-center w-100">
                 <div className="mb-4 text-center">
                     <Link to="/" className="text-decoration-none d-flex align-items-center justify-content-center fw-bold fs-4 text-white">

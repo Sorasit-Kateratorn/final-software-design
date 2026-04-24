@@ -1,19 +1,15 @@
 import { Button, Container, Badge } from "react-bootstrap";
 import { Link, useNavigate } from "react-router";
 import { AppNavbar } from "../../components/AppNavbar";
+import { useAuth } from "../../context/AuthContext";
 
 export function Home() {
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
 
     return (
         <div className="d-flex flex-column min-vh-100">
-            <AppNavbar 
-                rightElement={
-                    <Button variant="primary-brand" onClick={() => navigate('/signup')}>
-                        Sign up with Google Auth
-                    </Button>
-                }
-            />
+            <AppNavbar />
             
             <main className="flex-grow-1 d-flex align-items-center">
                 <Container className="text-center">
@@ -41,7 +37,7 @@ export function Home() {
                     <Button 
                         variant="primary-brand" 
                         size="lg" 
-                        onClick={() => navigate('/signup')}
+                        onClick={() => isAuthenticated ? navigate('/main') : navigate('/login')}
                         className="px-5 py-3 fw-bold rounded-pill"
                     >
                         Start Creating

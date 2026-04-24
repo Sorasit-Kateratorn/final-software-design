@@ -71,7 +71,7 @@ If the server runs successfully, the Django project is working.
 ---
 
 
-### Evidence of CRUD Functionality + Domain modeling
+### Evidence of CRUD Functionality + Domain modeling (exercise 3)
 
 
 [Link here](https://docs.google.com/document/d/1MPPSM0sSq1NjJ2zlB2z-vb9CKjb0V_ytjwQRhGoYWus/edit?usp=sharing)
@@ -80,14 +80,18 @@ If the server runs successfully, the Django project is working.
 ---
 
 
-| Method | Endpoint     | Description           |
-| ------ | ------------ | --------------------- |
-| GET    | `/user/`     | Retrieve all users    |
-| POST   | `/user/`     | Create a new user     |
-| GET    | `/user/{id}` | Retrieve a user by ID |
-| PUT    | `/user/{id}` | Update entire user    |
-| PATCH  | `/user/{id}` | Partially update user |
-| DELETE | `/user/{id}` | Delete user           |
+| Method | Endpoint         | Description                            |
+| ------ | ---------------- | -------------------------------------- |
+| POST   | `/auth/login/`   | Local Login (Returns JWT Tokens)       |
+| POST   | `/auth/google/`  | Google OAuth Login (Returns JWT Tokens)|
+| GET    | `/user/`         | Retrieve all users                     |
+| POST   | `/user/`         | Create a new user (Local Signup)       |
+| GET    | `/user/{id}`     | Retrieve a user by ID                  |
+| PUT    | `/user/{id}`     | Update entire user                     |
+| PATCH  | `/user/{id}`     | Partially update user                  |
+| DELETE | `/user/{id}`     | Delete user                            |
+
+*Note: Local authentication strictly uses `username` and `password`. Google OAuth automatically creates a user via email and sets an unusable password for security.*
 
 
 
@@ -140,7 +144,23 @@ SUNO_API_KEY=your_actual_suno_api_key
 # Required for Suno API (a placeholder is sufficient for development)
 SUNO_CALLBACK_URL=https://example.com/callback
 
+# Google OAuth Client ID for backend token verification
+GOOGLE_CLIENT_ID=your_google_client_id_here
 ```
+
+### Google OAuth Setup
+To enable Google Login, you need to configure both the backend and frontend.
+
+1. **Get your Client ID:**
+   - Please follow the detailed visual guide in [Google_OAuth.md](./Google_OAuth.md) to set up your Google Cloud Project and obtain your Client ID.
+
+2. **Environment Configuration:**
+   - **Important:** Don't forget to create your `.env` files based on the provided `.env.example` templates in both the `frontend/` and `backend/` directories!
+   - **Frontend (`frontend/.env`)**: Add `VITE_GOOGLE_CLIENT_ID=your_client_id_here`
+   - **Backend (`backend/.env`)**: Add `GOOGLE_CLIENT_ID=your_client_id_here`
+
+3. **Backend Dependencies:**
+   - Run `pip install -r requirements.txt` to ensure the backend authentication packages are installed.
 
 #### How to run Mock mode
 1. Set `GENERATOR_STRATEGY=mock` in your `backend/.env`.
