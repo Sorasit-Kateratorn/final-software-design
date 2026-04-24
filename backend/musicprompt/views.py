@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import MusicPrompt
 from .serializers import MusicPromptSerializers
-from .strategies import get_generator_strategy
+from .strategies import MusicGeneratorContext
 from music.models import Music
 import os
 import requests as req
@@ -26,9 +26,9 @@ class MusicPromptView(APIView):
     def post(self, request):
         serializer = MusicPromptSerializers(data=request.data)
         if serializer.is_valid():
-            # Use Strategy Pattern
-            strategy = get_generator_strategy()
-            result = strategy.generate(request.data)
+            # Use Strategy Pattern Context
+            context = MusicGeneratorContext()
+            result = context.execute_generation(request.data)
             
             
             
@@ -39,7 +39,7 @@ class MusicPromptView(APIView):
         
             music_prompt = serializer.save() # save prompt
             task_id = result.get("taskId") # Extract taskId safely
-            Music.objects.create(
+            music = Music.objects.create(
             title=request.data.get("title"),
             genre=request.data.get("genre"),
             duration_time=0,  # temporary
@@ -47,6 +47,16 @@ class MusicPromptView(APIView):
             task_id=task_id,
             music_prompt=music_prompt
         )
+            
+            library_id = request.data.get("library_id")
+            if library_id:
+                try:
+                    from library.models import Library
+                    library = Library.objects.get(pk=library_id)
+                    from music.models import Playlist
+                    Playlist.objects.create(music=music, library=library)
+                except Exception as e:
+                    pass
             
             
             
@@ -98,9 +108,9 @@ class MusicPromptView(APIView):
     
 class MusicPromptStatusView(APIView):
     def get(self, request, task_id):
-        # Use Strategy Pattern
-        strategy = get_generator_strategy()
-        result = strategy.check_status(task_id)
+        # Use Strategy Pattern Context
+        context = MusicGeneratorContext()
+        result = context.execute_status_check(task_id)
         
         if "error" in result:
             return Response(result, status=status.HTTP_400_BAD_REQUEST)

@@ -18,7 +18,10 @@ class LibraryView(APIView):
             except:
                 return Response({}, status=status.HTTP_200_OK)
         else: #get all data in user table
-            libraries = Library.objects.all()
+            if request.user.is_authenticated:
+                libraries = Library.objects.filter(user=request.user)
+            else:
+                libraries = Library.objects.all()
             serializer = LibrarySerializers(libraries, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -26,7 +29,9 @@ class LibraryView(APIView):
         serializer = LibrarySerializers(data=request.data)
         
         if serializer.is_valid():
-            serializer.save()
+            if not request.user.is_authenticated:
+                return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

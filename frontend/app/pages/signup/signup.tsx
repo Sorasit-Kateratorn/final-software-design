@@ -1,11 +1,11 @@
 import { Form, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router";
 import { AuthCard } from "../../components/AuthCard";
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
-export function Signup() { 
+export function Signup() {
     const navigate = useNavigate();
     const { login } = useAuth();
     const [error, setError] = useState("");
@@ -19,12 +19,12 @@ export function Signup() {
             const res = await fetch("http://127.0.0.1:8000/user/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password }),
             });
 
             if (res.ok) {
                 // After successful signup, redirect to login
-                navigate('/login');
+                navigate("/login");
             } else {
                 const data = await res.json();
                 setError(`Signup failed: ${JSON.stringify(data)}`);
@@ -40,17 +40,17 @@ export function Signup() {
             const res = await fetch("http://127.0.0.1:8000/auth/google/", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    credential: credentialResponse.credential
-                })
+                    credential: credentialResponse.credential,
+                }),
             });
 
             if (res.ok) {
                 const data = await res.json();
                 login(data.access, data.refresh, data.user);
-                navigate('/main');
+                navigate("/main");
             } else {
                 const data = await res.json();
                 setError(`Google login failed: ${data.detail || JSON.stringify(data)}`);
@@ -62,10 +62,7 @@ export function Signup() {
     };
 
     return (
-        <AuthCard 
-            title="Create an account" 
-            subtitle="Enter your details to create your account"
-        >
+        <AuthCard title="Create an account" subtitle="Enter your details to create your account">
             {error && <div className="alert alert-danger py-2">{error}</div>}
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="formUsername">
@@ -84,25 +81,24 @@ export function Signup() {
 
                 <div className="position-relative mb-4">
                     <hr className="border-secondary" />
-                    <div className="position-absolute top-50 start-50 translate-middle px-2" style={{ backgroundColor: 'var(--ams-card-bg)' }}>
-                        <span className="small text-muted" style={{ fontSize: '0.75rem' }}>OR CONTINUE WITH</span>
+                    <div className="position-absolute top-50 start-50 translate-middle px-2" style={{ backgroundColor: "var(--ams-card-bg)" }}>
+                        <span className="small text-muted" style={{ fontSize: "0.75rem" }}>
+                            OR CONTINUE WITH
+                        </span>
                     </div>
                 </div>
 
-                <div className="d-flex justify-content-center mb-4" style={{ minHeight: '40px' }}>
-                    <div style={{ display: 'inline-block' }}>
-                        <GoogleLogin
-                            onSuccess={handleGoogleSuccess}
-                            onError={() => setError('Google Login Failed')}
-                            useOneTap
-                            locale="en"
-                        />
+                <div className="d-flex justify-content-center mb-4" style={{ minHeight: "40px" }}>
+                    <div style={{ display: "inline-block" }}>
+                        <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => setError("Google Login Failed")} useOneTap />
                     </div>
                 </div>
 
                 <div className="text-center small">
                     <span className="text-muted">Already have an account? </span>
-                    <Link to="/login" className="text-brand text-decoration-none">Sign In</Link>
+                    <Link to="/login" className="text-brand text-decoration-none">
+                        Sign In
+                    </Link>
                 </div>
             </Form>
         </AuthCard>

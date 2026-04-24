@@ -37,7 +37,7 @@ class MockSongGeneratorStrategy(SongGeneratorStrategy):
         return {
             "taskId": task_id,
             "status": "SUCCESS",
-            "audio_url": f"https://mock.audio.com/{task_id}.mp3",
+            "audio_url": "http://localhost:8000/media/mock_music/sample.mp3",
             "message": "Mock generation completed."
         }
 
@@ -241,3 +241,23 @@ def get_generator_strategy():
     if strategy == 'suno':
         return SunoSongGeneratorStrategy()
     return MockSongGeneratorStrategy()
+
+class MusicGeneratorContext:
+    """
+    The Context class for the Strategy Pattern. It maintains a reference to a
+    Strategy object and delegates the execution to it.
+    """
+    def __init__(self, strategy: SongGeneratorStrategy = None):
+        if strategy is None:
+            self.strategy = get_generator_strategy()
+        else:
+            self.strategy = strategy
+
+    def set_strategy(self, strategy: SongGeneratorStrategy):
+        self.strategy = strategy
+
+    def execute_generation(self, data: Dict[str, Any]):
+        return self.strategy.generate(data)
+
+    def execute_status_check(self, task_id: str):
+        return self.strategy.check_status(task_id)

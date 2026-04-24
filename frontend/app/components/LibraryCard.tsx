@@ -8,9 +8,10 @@ interface LibraryCardProps {
     tracks: TrackData[];
     onEdit: () => void;
     onDelete: () => void;
+    onGenerateMusic?: () => void;
 }
 
-export function LibraryCard({ name, description, tracks, onEdit, onDelete }: LibraryCardProps) {
+export function LibraryCard({ name, description, tracks, onEdit, onDelete, onGenerateMusic }: LibraryCardProps) {
     return (
         <div className="library-card p-4">
             <div className="d-flex justify-content-between align-items-start mb-2">
@@ -38,7 +39,7 @@ export function LibraryCard({ name, description, tracks, onEdit, onDelete }: Lib
                         placeholder="Search in this library..." 
                     />
                 </div>
-                <Button variant="primary-brand" className="d-flex align-items-center flex-shrink-0 text-nowrap">
+                <Button variant="primary-brand" onClick={onGenerateMusic} className="d-flex align-items-center flex-shrink-0 text-nowrap">
                     <i className="bi bi-plus text-black me-2 fs-5 line-height-1"></i>
                     Generate Music
                 </Button>
