@@ -19,6 +19,42 @@ interface TrackRowProps {
 }
 
 export function TrackRow({ track }: TrackRowProps) {
+    const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        if (!track.audioUrl) return;
+
+        try {
+            const response = await fetch(track.audioUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${track.title.replace(/\s+/g, '_')}.mp3`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Download failed:", error);
+            alert("Failed to download file");
+        }
+    };
+
+    const handleShare = () => {
+        if (!track.audioUrl) return;
+
+        const isMock = track.audioUrl.includes("localhost") || track.audioUrl.includes("mock_music");
+        
+        if (isMock) {
+            alert("Mock music cannot be shared");
+            return;
+        }
+
+        navigator.clipboard.writeText(track.audioUrl)
+            .then(() => alert("Link copied to clipboard!"))
+            .catch(() => alert("Failed to copy link"));
+    };
+
     if (track.isJob) {
         return (
             <div className="track-row p-3 d-flex flex-column border-start border-3 border-brand bg-dark bg-opacity-50">
@@ -63,17 +99,17 @@ export function TrackRow({ track }: TrackRowProps) {
             </div>
             <div className="d-flex align-items-center ms-3">
                 {track.audioUrl && (
-                    <a href={track.audioUrl} download={`${track.title.replace(/\s+/g, '_')}.mp3`} target="_blank" rel="noopener noreferrer" className="icon-button me-3 text-success" title="Download">
+                    <button onClick={handleDownload} className="icon-button me-3 text-success border-0 bg-transparent" title="Download">
                         <i className="bi bi-download"></i>
-                    </a>
+                    </button>
                 )}
                 {!track.audioUrl && (
                     <button className="icon-button me-3" title="Play">
                         <i className="bi bi-play-fill fs-5"></i>
                     </button>
                 )}
-                <button className="icon-button me-3" title="Edit">
-                    <i className="bi bi-pencil-square"></i>
+                <button className="icon-button me-3" title="Share" onClick={handleShare}>
+                    <i className="bi bi-share"></i>
                 </button>
                 <button className="icon-button" title="Delete">
                     <i className="bi bi-trash"></i>
