@@ -1,5 +1,5 @@
 ## Project Setup Instructions
-Before doing anything pls doing this step first
+Before running the project, please complete the setup steps below.
 #### Configuration (.env file)
 Create a `.env` file in the `backend/` directory (you can copy `.env.example`).
 
@@ -77,8 +77,13 @@ If the server runs successfully, the Django project is working.
 
 ```bash
 cd frontend
-
+npm install
 npm run dev
+```
+Then open the browser and go to:
+
+```
+http://localhost:5173/
 ```
 
 ---
