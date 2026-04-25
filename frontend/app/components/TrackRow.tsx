@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { ProgressBar } from "react-bootstrap";
+import { ConfirmModal } from "./ConfirmModal";
 
 export interface TrackData {
     id: string;
@@ -21,6 +23,8 @@ interface TrackRowProps {
 }
 
 export function TrackRow({ track, onDelete, onShowToast }: TrackRowProps) {
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
     const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         if (!track.audioUrl) return;
@@ -117,11 +121,7 @@ export function TrackRow({ track, onDelete, onShowToast }: TrackRowProps) {
                 <button className="icon-button me-3" title="Share" onClick={handleShare}>
                     <i className="bi bi-share"></i>
                 </button>
-                <button className="icon-button" title="Delete" onClick={() => {
-                    if (window.confirm("Are you sure you want to remove this track from the library?")) {
-                        if (onDelete) onDelete();
-                    }
-                }}>
+                <button className="icon-button" title="Delete" onClick={() => setShowDeleteConfirm(true)}>
                     <i className="bi bi-trash"></i>
                 </button>
             </div>
@@ -131,6 +131,15 @@ export function TrackRow({ track, onDelete, onShowToast }: TrackRowProps) {
                     <audio controls src={track.audioUrl} className="w-100" style={{ height: "40px" }} />
                 </div>
             )}
+            <ConfirmModal 
+                show={showDeleteConfirm} 
+                itemName={track.title} 
+                onConfirm={() => {
+                    setShowDeleteConfirm(false);
+                    if (onDelete) onDelete();
+                }} 
+                onCancel={() => setShowDeleteConfirm(false)} 
+            />
         </div>
     );
 }
