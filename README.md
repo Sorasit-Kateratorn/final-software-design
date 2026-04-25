@@ -99,6 +99,7 @@ Then open the browser and go to:
 ```
 http://localhost:5173/
 ```
+Note: On the first run, the page may appear blank briefly while the Vite development server is initializing. If this happens, refresh the browser once.
 
 ---
 
