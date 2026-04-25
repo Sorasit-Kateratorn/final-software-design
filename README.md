@@ -186,3 +186,12 @@ To enable Google Login, you need to configure both the backend and frontend.
 ## Evidence for exercise4 + Demo
 
 [Link here](https://docs.google.com/document/d/1dlFLKA79bE8DtYs4g0FyBlAcE5cbChnmMETeC-Q2IcA/edit?usp=sharing)
+
+
+## UML Diagrams
+
+### Class Diagram
+![Class Diagram](/image/class_diagram.png)
+
+### Sequence Diagram (Song Generation Flow)
+![Sequence Diagram](/image/sequence_diagram.png)
