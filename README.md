@@ -195,3 +195,6 @@ To enable Google Login, you need to configure both the backend and frontend.
 
 ### Sequence Diagram (Song Generation Flow)
 ![Sequence Diagram](/image/sequence_diagram.png)
+
+## Domain modeling
+![Domain modeling](/image/domain_modeling.png)
