@@ -1,4 +1,9 @@
 ## Project Setup Instructions
+Before doing anything pls doing this step first
+#### Configuration (.env file)
+Create a `.env` file in the `backend/` directory (you can copy `.env.example`).
+
+Create a `.env` file in the `frontend/` directory (you can copy `.env.example`).
 
 Follow these steps to run the project locally.
 
@@ -68,6 +73,14 @@ http://127.0.0.1:8000/
 
 If the server runs successfully, the Django project is working.
 
+### 7. Run the frontend
+
+```bash
+cd frontend
+
+npm run dev
+```
+
 ---
 
 
@@ -132,47 +145,44 @@ If the server runs successfully, the Django project is working.
 
 This project implements the Strategy pattern to support different methods for generating songs. The selection between strategies is controlled using the `GENERATOR_STRATEGY` environment variable, allowing the generation behavior to be switched without modifying the application code.
 
-#### Configuration (.env file)
-Create a `.env` file in the `backend/` directory (you can copy `.env.example`).
-```env
-# Choose your strategy: "mock" or "suno"
-GENERATOR_STRATEGY=mock
 
-# If using suno, add your API key here (DO NOT COMMIT THIS FILE)
-SUNO_API_KEY=your_actual_suno_api_key
+### For full Strategy Pattern explanation:
+[STRATEGY_PATTERN.md](STRATEGY_PATTERN.md)
 
-# Required for Suno API (a placeholder is sufficient for development)
-SUNO_CALLBACK_URL=https://example.com/callback
-
-# Google OAuth Client ID for backend token verification
-GOOGLE_CLIENT_ID=your_google_client_id_here
-```
-
+---
 ### Google OAuth Setup
 To enable Google Login, you need to configure both the backend and frontend.
 
 1. **Get your Client ID:**
-   - Please follow the detailed visual guide in [Google_OAuth.md](./Google_OAuth.md) to set up your Google Cloud Project and obtain your Client ID.
+   - Please follow the detailed visual guide in [Google_OAuth.md](./Google_OAuth.md) to set up your Google Cloud Project.
 
 2. **Environment Configuration:**
-   - **Important:** Don't forget to create your `.env` files based on the provided `.env.example` templates in both the `frontend/` and `backend/` directories!
-   - **Frontend (`frontend/.env`)**: Add `VITE_GOOGLE_CLIENT_ID=your_client_id_here`
-   - **Backend (`backend/.env`)**: Add `GOOGLE_CLIENT_ID=your_client_id_here`
+   - **Important:** Don't forget to create your `.env` files based on the provided `.env.example` templates
 
 3. **Backend Dependencies:**
    - Run `pip install -r requirements.txt` to ensure the backend authentication packages are installed.
 
-#### How to run Mock mode
-1. Set `GENERATOR_STRATEGY=mock` in your `backend/.env`.
-2. Start the server.
-3. Make a POST request to `/musicprompt/` with your prompt data. The mock strategy will execute without calling the external API, returning a fake `taskId`.
-4. Check the status using `GET /musicprompt/status/<taskId>`. It will instantly return a mock SUCCESS payload.
-
-#### How to run Suno mode
-1. Set `GENERATOR_STRATEGY=suno` in your `backend/.env`.
-2. Ensure you have added your valid API key to `SUNO_API_KEY`.
-3. Start the server.
-4. Make a POST request to `/musicprompt/` with your prompt data. The Suno strategy will call `https://api.sunoapi.org/api/v1/generate` and return a real `taskId`.
-5. Check the status using `GET /musicprompt/status/<taskId>`. It will call `https://api.sunoapi.org/api/v1/generate/record-info` to get real-time status.
+---
 
 
+
+
+## Testing & Grading
+
+
+
+1. **Strategy Pattern Implementation**: 
+   - Please review `backend/musicprompt/strategies.py`. 
+   - Here you will find the formal `MusicGeneratorContext` class along with the `SongGeneratorStrategy` interface and its concrete strategies (`MockSongGeneratorStrategy`, `SunoSongGeneratorStrategy`).
+2. **Mock Generation Demo**: 
+   - By default, `.env` is set to `GENERATOR_STRATEGY=mock`. 
+   - The frontend will trigger the mock generation and receive a real, playable `.mp3` file, proving the flow works end-to-end without needing an external API key.
+3. **Frontend Integration**:
+   - The application provides a complete UI to input a prompt, poll for generation status, and play/download the resulting music.
+
+---
+
+
+## Evidence for exercise4 + Demo
+
+[Link here](https://docs.google.com/document/d/1dlFLKA79bE8DtYs4g0FyBlAcE5cbChnmMETeC-Q2IcA/edit?usp=sharing)
