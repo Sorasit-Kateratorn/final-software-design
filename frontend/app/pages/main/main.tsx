@@ -54,17 +54,18 @@ export function Main() {
 
     // Custom fetch wrapper to handle auth and refresh token
     const fetchWithAuth = useCallback(async (url: string, options: RequestInit = {}) => {
-        let token = localStorage.getItem("access") || localStorage.getItem("access_token");
+        let token = localStorage.getItem("access_token");
         let headers = new Headers(options.headers || {});
         if (token) headers.set("Authorization", `Bearer ${token}`);
 
         let response = await fetch(url, { ...options, headers });
 
         if (response.status === 401) {
-            const refreshToken = localStorage.getItem("refresh") || localStorage.getItem("refresh_token");
+            const refreshToken = localStorage.getItem("refresh_token");
             if (refreshToken) {
                 try {
-                    const refreshRes = await fetch("http://localhost:8000/auth/token/refresh/", {
+                    const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+                    const refreshRes = await fetch(`${backendUrl}/auth/token/refresh/`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ refresh: refreshToken })
@@ -73,7 +74,6 @@ export function Main() {
                     if (refreshRes.ok) {
                         const data = await refreshRes.json();
                         const newAccess = data.access || data.access_token;
-                        localStorage.setItem("access", newAccess);
                         localStorage.setItem("access_token", newAccess);
                         
                         headers.set("Authorization", `Bearer ${newAccess}`);
@@ -93,13 +93,14 @@ export function Main() {
 
     const fetchLibraries = useCallback(async () => {
         try {
-            const token = localStorage.getItem("access") || localStorage.getItem("access_token");
+            const token = localStorage.getItem("access_token");
             if (!token) {
                 navigate("/login");
                 return;
             }
 
-            const res = await fetchWithAuth("http://localhost:8000/library/", {
+            const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+            const res = await fetchWithAuth(`${backendUrl}/library/`, {
                 headers: { "Content-Type": "application/json" }
             });
             
@@ -148,9 +149,10 @@ export function Main() {
     };
 
     const handleSave = async () => {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
         if (modalMode === "create") {
             try {
-                const res = await fetchWithAuth("http://localhost:8000/library/", {
+                const res = await fetchWithAuth(`${backendUrl}/library/`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name: libName || "New Library" })
@@ -161,7 +163,7 @@ export function Main() {
             }
         } else {
             try {
-                const res = await fetchWithAuth(`http://localhost:8000/library/${currentLibId}`, {
+                const res = await fetchWithAuth(`${backendUrl}/library/${currentLibId}`, {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ name: libName })
@@ -175,8 +177,9 @@ export function Main() {
     };
 
     const handleDelete = async (id: string) => {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
         try {
-            const res = await fetchWithAuth(`http://localhost:8000/library/${id}`, {
+            const res = await fetchWithAuth(`${backendUrl}/library/${id}`, {
                 method: "DELETE"
             });
             if (res.ok) {
@@ -190,8 +193,9 @@ export function Main() {
     };
 
     const handleDeleteTrack = async (libId: string, trackId: string) => {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
         try {
-            const res = await fetchWithAuth(`http://localhost:8000/library/${libId}/track/${trackId}`, {
+            const res = await fetchWithAuth(`${backendUrl}/library/${libId}/track/${trackId}`, {
                 method: "DELETE"
             });
             if (res.ok) {
@@ -224,8 +228,9 @@ export function Main() {
         e.preventDefault();
         setGenError("");
 
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
         try {
-            const response = await fetchWithAuth("http://localhost:8000/musicprompt/", {
+            const response = await fetchWithAuth(`${backendUrl}/musicprompt/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
@@ -261,8 +266,9 @@ export function Main() {
     const handleRetryJob = async (job: GenerationJob) => {
         setActiveJobs(prev => prev.filter(j => j.taskId !== job.taskId));
         
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
         try {
-            const response = await fetchWithAuth("http://localhost:8000/musicprompt/", {
+            const response = await fetchWithAuth(`${backendUrl}/musicprompt/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ 
@@ -295,10 +301,11 @@ export function Main() {
 
         let isMounted = true;
         const interval = setInterval(async () => {
+            const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
             for (const job of incompleteJobs) {
                 if (!isMounted) break;
                 try {
-                    const response = await fetchWithAuth(`http://localhost:8000/musicprompt/status/${job.taskId}`);
+                    const response = await fetchWithAuth(`${backendUrl}/musicprompt/status/${job.taskId}`);
                     if (response.ok && isMounted) {
                         const data = await response.json();
                         const newStatus = data.status || "PENDING";

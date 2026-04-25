@@ -1,7 +1,7 @@
 import { Form, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router";
 import { AuthCard } from "../../components/AuthCard";
-import { GoogleLogin } from "@react-oauth/google";
+
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -15,8 +15,9 @@ export function Signup() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
         try {
-            const res = await fetch("http://127.0.0.1:8000/user/", {
+            const res = await fetch(`${backendUrl}/user/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password }),
@@ -35,30 +36,9 @@ export function Signup() {
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse: any) => {
-        try {
-            const res = await fetch("http://127.0.0.1:8000/auth/google/", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    credential: credentialResponse.credential,
-                }),
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                login(data.access, data.refresh, data.user);
-                navigate("/main");
-            } else {
-                const data = await res.json();
-                setError(`Google login failed: ${data.detail || JSON.stringify(data)}`);
-            }
-        } catch (err) {
-            console.error(err);
-            setError("Network error during Google login.");
-        }
+    const handleGoogleSignup = () => {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+        window.location.href = `${backendUrl}/auth/google/login/`;
     };
 
     return (
@@ -89,8 +69,16 @@ export function Signup() {
                 </div>
 
                 <div className="d-flex justify-content-center mb-4" style={{ minHeight: "40px" }}>
-                    <div style={{ display: "inline-block" }}>
-                        <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => setError("Google Login Failed")} useOneTap />
+                    <div style={{ display: "inline-block", width: "100%" }}>
+                        <Button 
+                            variant="outline-secondary" 
+                            className="w-100 d-flex align-items-center justify-content-center gap-2 py-2"
+                            onClick={handleGoogleSignup}
+                            type="button"
+                        >
+                            <i className="bi bi-google"></i>
+                            Sign up with Google
+                        </Button>
                     </div>
                 </div>
 

@@ -42,6 +42,19 @@ http://localhost:5173
 http://127.0.0.1:5173
 ```
 
-### Then you can click create it and copy the CLIENT_ID in .env
+
+### **Authorized Redirect URIs**
+
+- Add the following URL:  
+
+```
+http://127.0.0.1:8000/auth/google/callback/
+http://localhost:8000/auth/google/callback/
+```
+
+
+
+
+### Then you can click create it and copy the CLIENT_ID, CLIENT_SECRET in .env
 
 

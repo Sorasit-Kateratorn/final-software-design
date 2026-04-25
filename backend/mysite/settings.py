@@ -26,7 +26,11 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SUNO_API_KEY = env("SUNO_API_KEY", default=None)
 GENERATOR_STRATEGY = env("GENERATOR_STRATEGY", default="mock")
+BACKEND_URL = env("BACKEND_URL", default="http://127.0.0.1:8000")
+FRONTEND_URL = env("FRONTEND_URL", default="http://localhost:5173")
 GOOGLE_CLIENT_ID = env("GOOGLE_CLIENT_ID", default=None)
+GOOGLE_CLIENT_SECRET = env("GOOGLE_CLIENT_SECRET", default=None)
+GOOGLE_REDIRECT_URI = env("GOOGLE_REDIRECT_URI", default=f"{BACKEND_URL}/auth/google/callback/")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/

@@ -24,6 +24,9 @@ class MusicPromptView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            
         serializer = MusicPromptSerializers(data=request.data)
         if serializer.is_valid():
             # Use Strategy Pattern Context
@@ -52,11 +55,11 @@ class MusicPromptView(APIView):
             if library_id:
                 try:
                     from library.models import Library
-                    library = Library.objects.get(pk=library_id)
+                    library = Library.objects.get(pk=library_id, user=request.user)
                     from music.models import Playlist
                     Playlist.objects.create(music=music, library=library)
                 except Exception as e:
-                    pass
+                    print(f"Failed to add music to library: {e}")
             
             
             

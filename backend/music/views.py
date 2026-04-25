@@ -62,6 +62,9 @@ class MusicView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+
         if pk is None:
             return Response(
                 {"detail": "DELETE requires pk in URL."},
@@ -69,5 +72,8 @@ class MusicView(APIView):
             )
 
         music = get_object_or_404(Music, pk=pk)
+        music_prompt = music.music_prompt
         music.delete()
+        if music_prompt:
+            music_prompt.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from user.views import UserView, GoogleLoginView
+from user.views import UserView, GoogleLoginRedirectView, GoogleCallbackView, GoogleTokenExchangeView
 from library.views import LibraryView, LibraryTrackView
 from music.views import MusicView
 from musicprompt.views import MusicPromptView, MusicPromptStatusView
@@ -26,7 +26,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('auth/google/', GoogleLoginView.as_view()),
+    path('auth/google/login/', GoogleLoginRedirectView.as_view()),
+    path('auth/google/callback/', GoogleCallbackView.as_view()),
+    path('auth/google/exchange/', GoogleTokenExchangeView.as_view()),
     path('auth/login/', TokenObtainPairView.as_view()),
     path('auth/token/refresh/', TokenRefreshView.as_view()),
     path('user/', UserView.as_view()),

@@ -12,17 +12,19 @@ from music.models import Playlist
 
 class LibraryView(APIView):
     def get(self, request, pk=None): # pk = primary key = id
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            
         if pk:
             try:
-                library = Library.objects.get(pk=pk) # get = get 1 record
+                library = Library.objects.get(pk=pk, user=request.user) # get = get 1 record
                 serializer = LibrarySerializers(library)
-            except:
-                return Response({}, status=status.HTTP_200_OK)
+            except Library.DoesNotExist:
+                return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
+            except Exception:
+                return Response({}, status=status.HTTP_400_BAD_REQUEST)
         else: #get all data in user table
-            if request.user.is_authenticated:
-                libraries = Library.objects.filter(user=request.user)
-            else:
-                libraries = Library.objects.all()
+            libraries = Library.objects.filter(user=request.user)
             serializer = LibrarySerializers(libraries, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
@@ -38,13 +40,16 @@ class LibraryView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            
         if pk is None:
             return Response(
                 {"detail": "PUT requires pk in URL."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        library = get_object_or_404(Library, pk=pk)
+        library = get_object_or_404(Library, pk=pk, user=request.user)
         serializer = LibrarySerializers(library, data=request.data)  # full update
         if serializer.is_valid():
             serializer.save()
@@ -52,13 +57,16 @@ class LibraryView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def patch(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            
         if pk is None:
             return Response(
                 {"detail": "PATCH requires pk in URL."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        library = get_object_or_404(Library, pk=pk)
+        library = get_object_or_404(Library, pk=pk, user=request.user)
         serializer = LibrarySerializers(library, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -66,13 +74,16 @@ class LibraryView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            
         if pk is None:
             return Response(
                 {"detail": "DELETE requires pk in URL."},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        library = get_object_or_404(Library, pk=pk)
+        library = get_object_or_404(Library, pk=pk, user=request.user)
         library.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     

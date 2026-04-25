@@ -33,6 +33,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     const login = (access: string, refresh: string, userData: any) => {
+        // Clear old legacy keys to prevent stale token bugs
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        
         localStorage.setItem("access_token", access);
         localStorage.setItem("refresh_token", refresh);
         if (userData) {
@@ -45,6 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const logout = () => {
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
         localStorage.removeItem("user");
         setAccessToken(null);
         setUser(null);

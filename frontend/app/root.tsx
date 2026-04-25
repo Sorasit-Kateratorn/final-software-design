@@ -5,7 +5,7 @@ import type { Route } from "./+types/root";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.min.css";
 import "./app.css";
-import { GoogleOAuthProvider } from '@react-oauth/google';
+
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -39,16 +39,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-    // If VITE_GOOGLE_CLIENT_ID is not set, fallback to empty string to prevent crashing,
-    // but Google Auth won't work without it.
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-    
     return (
-        <GoogleOAuthProvider clientId={clientId}>
-            <AuthProvider>
-                <Outlet />
-            </AuthProvider>
-        </GoogleOAuthProvider>
+        <AuthProvider>
+            <Outlet />
+        </AuthProvider>
     );
 }
 
