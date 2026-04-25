@@ -16,9 +16,11 @@ export interface TrackData {
 
 interface TrackRowProps {
     track: TrackData;
+    onDelete?: () => void;
+    onShowToast?: (msg: string, variant?: "success" | "danger" | "warning") => void;
 }
 
-export function TrackRow({ track }: TrackRowProps) {
+export function TrackRow({ track, onDelete, onShowToast }: TrackRowProps) {
     const handleDownload = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         if (!track.audioUrl) return;
@@ -36,7 +38,7 @@ export function TrackRow({ track }: TrackRowProps) {
             window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error("Download failed:", error);
-            alert("Failed to download file");
+            if (onShowToast) onShowToast("Failed to download file", "danger");
         }
     };
 
@@ -46,13 +48,17 @@ export function TrackRow({ track }: TrackRowProps) {
         const isMock = track.audioUrl.includes("localhost") || track.audioUrl.includes("mock_music");
         
         if (isMock) {
-            alert("Mock music cannot be shared");
+            if (onShowToast) onShowToast("Mock music cannot be shared", "warning");
             return;
         }
 
         navigator.clipboard.writeText(track.audioUrl)
-            .then(() => alert("Link copied to clipboard!"))
-            .catch(() => alert("Failed to copy link"));
+            .then(() => {
+                if (onShowToast) onShowToast("Link copied to clipboard!", "success");
+            })
+            .catch(() => {
+                if (onShowToast) onShowToast("Failed to copy link", "danger");
+            });
     };
 
     if (track.isJob) {
@@ -111,7 +117,11 @@ export function TrackRow({ track }: TrackRowProps) {
                 <button className="icon-button me-3" title="Share" onClick={handleShare}>
                     <i className="bi bi-share"></i>
                 </button>
-                <button className="icon-button" title="Delete">
+                <button className="icon-button" title="Delete" onClick={() => {
+                    if (window.confirm("Are you sure you want to remove this track from the library?")) {
+                        if (onDelete) onDelete();
+                    }
+                }}>
                     <i className="bi bi-trash"></i>
                 </button>
             </div>

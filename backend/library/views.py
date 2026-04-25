@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Library
 from .serializers import LibrarySerializers
+from music.models import Playlist
 
 # Create your views here.
 
@@ -75,4 +76,16 @@ class LibraryView(APIView):
         library.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-    
+class LibraryTrackView(APIView):
+    def delete(self, request, lib_pk, track_pk):
+        if not request.user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        library = get_object_or_404(Library, pk=lib_pk, user=request.user)
+        
+        playlist_item = Playlist.objects.filter(library=library, music_id=track_pk).first()
+        if playlist_item:
+            playlist_item.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"detail": "Track not found in this library"}, status=status.HTTP_404_NOT_FOUND)

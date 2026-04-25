@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { TrackRow, type TrackData } from "./TrackRow";
 
@@ -9,9 +10,17 @@ interface LibraryCardProps {
     onEdit: () => void;
     onDelete: () => void;
     onGenerateMusic?: () => void;
+    onDeleteTrack: (trackId: string) => void;
+    onShowToast: (msg: string, variant?: "success" | "danger" | "warning") => void;
 }
 
-export function LibraryCard({ name, description, tracks, onEdit, onDelete, onGenerateMusic }: LibraryCardProps) {
+export function LibraryCard({ name, description, tracks, onEdit, onDelete, onGenerateMusic, onDeleteTrack, onShowToast }: LibraryCardProps) {
+    const [innerSearch, setInnerSearch] = useState("");
+
+    const filteredTracks = tracks.filter(t => 
+        t.title.toLowerCase().includes(innerSearch.toLowerCase()) || 
+        (t.tags && t.tags.toLowerCase().includes(innerSearch.toLowerCase()))
+    );
     return (
         <div className="library-card p-4">
             <div className="d-flex justify-content-between align-items-start mb-2">
@@ -37,6 +46,8 @@ export function LibraryCard({ name, description, tracks, onEdit, onDelete, onGen
                         type="text" 
                         className="form-control ps-5" 
                         placeholder="Search in this library..." 
+                        value={innerSearch}
+                        onChange={(e) => setInnerSearch(e.target.value)}
                     />
                 </div>
                 <Button variant="primary-brand" onClick={onGenerateMusic} className="d-flex align-items-center flex-shrink-0 text-nowrap">
@@ -46,8 +57,8 @@ export function LibraryCard({ name, description, tracks, onEdit, onDelete, onGen
             </div>
 
             <div className="d-flex flex-column gap-2">
-                {tracks.map(track => (
-                    <TrackRow key={track.id} track={track} />
+                {filteredTracks.map(track => (
+                    <TrackRow key={track.id} track={track} onDelete={() => onDeleteTrack(track.id)} onShowToast={onShowToast} />
                 ))}
             </div>
         </div>

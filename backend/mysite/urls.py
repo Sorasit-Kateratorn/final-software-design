@@ -19,7 +19,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from user.views import UserView, GoogleLoginView
-from library.views import LibraryView
+from library.views import LibraryView, LibraryTrackView
 from music.views import MusicView
 from musicprompt.views import MusicPromptView, MusicPromptStatusView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -33,6 +33,7 @@ urlpatterns = [
     path('user/<int:pk>', UserView.as_view()),
     path('library/', LibraryView.as_view()),
     path('library/<int:pk>', LibraryView.as_view()),
+    path('library/<int:lib_pk>/track/<int:track_pk>', LibraryTrackView.as_view()),
     path('music/', MusicView.as_view()),
     path('music/<int:pk>', MusicView.as_view()),
     path('musicprompt/', MusicPromptView.as_view()),

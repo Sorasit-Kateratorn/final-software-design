@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
-import { Container, Row, Col, Form, Button, Modal, Spinner, Alert } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Modal, Spinner, Alert, Toast, ToastContainer } from "react-bootstrap";
 import { AppNavbar } from "../../components/AppNavbar";
 import { LibraryCard } from "../../components/LibraryCard";
 import type { TrackData } from "../../components/TrackRow";
@@ -43,6 +43,14 @@ export function Main() {
     const [genGenre, setGenGenre] = useState("Pop");
     const [genOccasion, setGenOccasion] = useState("Party");
     const [genError, setGenError] = useState("");
+
+    // Search and Toast States
+    const [searchQuery, setSearchQuery] = useState("");
+    const [toast, setToast] = useState({ show: false, message: "", variant: "success" });
+
+    const showToast = (message: string, variant: "success" | "danger" | "warning" | "info" = "success") => {
+        setToast({ show: true, message, variant });
+    };
 
     // Custom fetch wrapper to handle auth and refresh token
     const fetchWithAuth = useCallback(async (url: string, options: RequestInit = {}) => {
@@ -171,9 +179,30 @@ export function Main() {
             const res = await fetchWithAuth(`http://localhost:8000/library/${id}`, {
                 method: "DELETE"
             });
-            if (res.ok) fetchLibraries();
+            if (res.ok) {
+                fetchLibraries();
+                showToast("Library deleted", "success");
+            }
         } catch (err) {
             console.error("Failed to delete library", err);
+            showToast("Failed to delete library", "danger");
+        }
+    };
+
+    const handleDeleteTrack = async (libId: string, trackId: string) => {
+        try {
+            const res = await fetchWithAuth(`http://localhost:8000/library/${libId}/track/${trackId}`, {
+                method: "DELETE"
+            });
+            if (res.ok) {
+                fetchLibraries();
+                showToast("Track removed from library", "success");
+            } else {
+                showToast("Failed to remove track", "danger");
+            }
+        } catch (err) {
+            console.error("Failed to remove track", err);
+            showToast("Failed to remove track", "danger");
         }
     };
 
@@ -308,7 +337,13 @@ export function Main() {
                 <div className="d-flex gap-3 mb-4">
                     <div className="position-relative flex-grow-1">
                         <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                        <input type="text" className="form-control ps-5" placeholder="Search libraries..." />
+                        <input 
+                            type="text" 
+                            className="form-control ps-5" 
+                            placeholder="Search libraries..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
                     <Button variant="primary-brand" onClick={handleShowCreate} className="d-flex align-items-center text-nowrap">
                         <i className="bi bi-plus-square me-2"></i>
@@ -332,7 +367,7 @@ export function Main() {
                     </div>
                 ) : (
                     <Row className="g-4">
-                        {libraries.map((lib) => {
+                        {libraries.filter(lib => lib.name.toLowerCase().includes(searchQuery.toLowerCase())).map((lib) => {
                             const libJobs: TrackData[] = activeJobs.filter(j => j.libraryId === lib.id).map(j => ({
                                 id: j.taskId,
                                 title: j.title,
@@ -355,6 +390,8 @@ export function Main() {
                                         onEdit={() => handleShowEdit(lib)} 
                                         onDelete={() => handleDelete(lib.id)} 
                                         onGenerateMusic={() => handleShowGenerate(lib.id)}
+                                        onDeleteTrack={(trackId) => handleDeleteTrack(lib.id, trackId)}
+                                        onShowToast={showToast}
                                     />
                                 </Col>
                             );
@@ -446,6 +483,15 @@ export function Main() {
                     </Form>
                 </Modal.Body>
             </Modal>
+
+            {/* Toast Container */}
+            <ToastContainer position="bottom-end" className="p-3" style={{ position: "fixed", zIndex: 9999 }}>
+                <Toast bg={toast.variant} show={toast.show} onClose={() => setToast(prev => ({ ...prev, show: false }))} delay={3000} autohide>
+                    <Toast.Body className={toast.variant === "warning" ? "text-dark" : "text-white"}>
+                        {toast.message}
+                    </Toast.Body>
+                </Toast>
+            </ToastContainer>
         </div>
     );
 }
