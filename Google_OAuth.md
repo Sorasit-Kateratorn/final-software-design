@@ -1,6 +1,6 @@
 # OAuth2 Setup Guide
 
-Follow these steps to configure **Google OAuth2** for uniplan setup.
+Follow these steps to configure **Google OAuth2** for this project set up credit(uniplan group project from isp) setup.
 
 ---
 

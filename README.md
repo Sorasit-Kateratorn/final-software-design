@@ -5,6 +5,20 @@ Create a `.env` file in the `backend/` directory (you can copy `.env.example`).
 
 Create a `.env` file in the `frontend/` directory (you can copy `.env.example`).
 
+### .env Format Note
+
+Do not add spaces around `=` and avoid inline comments.
+
+Correct:
+GENERATOR_STRATEGY=suno
+also check that after suno dont have the space
+
+Incorrect:
+GENERATOR_STRATEGY = suno
+GENERATOR_STRATEGY=suno # comment
+
+if you do wrong the system will always make the mock song instead the real song
+
 Follow these steps to run the project locally.
 
 ### 1. Clone the Repository
@@ -158,7 +172,7 @@ This project implements the Strategy pattern to support different methods for ge
 ### Google OAuth Setup
 To enable Google Login, you need to configure both the backend and frontend.
 
-1. **Get your Client ID:**
+1. **Get your Client ID and Client SECRET:**
    - Please follow the detailed visual guide in [Google_OAuth.md](./Google_OAuth.md) to set up your Google Cloud Project.
 
 2. **Environment Configuration:**
