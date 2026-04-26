@@ -10,6 +10,7 @@ Create a `.env` file in the `frontend/` directory (you can copy `.env.example`).
 To enable real song generation, add your Suno API key in the backend `.env` file:
 
 ```env
+GENERATOR_STRATEGY=mock # Choose generation strategy: 'mock' or 'suno'
 SUNO_API_KEY=your_api_key_here
 ```
 
