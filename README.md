@@ -5,6 +5,14 @@ Create a `.env` file in the `backend/` directory (you can copy `.env.example`).
 
 Create a `.env` file in the `frontend/` directory (you can copy `.env.example`).
 
+### Suno API Setup
+
+To enable real song generation, add your Suno API key in the backend `.env` file:
+
+```env
+SUNO_API_KEY=your_api_key_here
+```
+
 ### .env Format Note
 
 Do not add spaces around `=` and avoid inline comments.
