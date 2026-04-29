@@ -106,19 +106,49 @@ export function Main() {
             
             if (res.ok) {
                 const data = await res.json();
-                const formatted = data.map((lib: any) => ({
-                    id: lib.id.toString(),
-                    name: lib.name,
-                    description: "Created on " + new Date(lib.created_at).toLocaleDateString(),
-                    tracks: (lib.tracks || []).map((t: any) => ({
-                        id: t.id.toString(),
-                        title: t.title,
-                        tags: `${t.genre} • ${t.status}`,
-                        duration: t.duration_time ? `${t.duration_time}s` : "0:00",
-                        audioUrl: t.audio_url
-                    }))
-                }));
+                const newActiveJobs: GenerationJob[] = [];
+                
+                const formatted = data.map((lib: any) => {
+                    const mappedTracks = (lib.tracks || []).map((t: any) => {
+                        // If track is still generating, we should resume polling
+                        if (t.status === "Pending" || t.status === "Generating") {
+                            newActiveJobs.push({
+                                taskId: t.task_id,
+                                libraryId: lib.id.toString(),
+                                title: t.title,
+                                genre: t.genre,
+                                occasion: "N/A", // Lost occasion data but that's fine
+                                status: t.status === "Pending" ? "PENDING" : "GENERATING",
+                                progress: t.status === "Pending" ? 25 : 50
+                            });
+                        }
+                        
+                        return {
+                            id: t.id.toString(),
+                            title: t.title,
+                            tags: `${t.genre} • ${t.status}`,
+                            duration: t.duration_time ? `${t.duration_time}s` : "0:00",
+                            audioUrl: t.audio_url
+                        };
+                    });
+                    
+                    return {
+                        id: lib.id.toString(),
+                        name: lib.name,
+                        description: "Created on " + new Date(lib.created_at).toLocaleDateString(),
+                        tracks: mappedTracks
+                    };
+                });
                 setLibraries(formatted);
+                
+                // Only set if we found jobs and activeJobs is currently empty (initial load)
+                if (newActiveJobs.length > 0) {
+                    setActiveJobs(prev => {
+                        const existingTaskIds = new Set(prev.map(j => j.taskId));
+                        const uniqueNew = newActiveJobs.filter(j => !existingTaskIds.has(j.taskId) && j.taskId);
+                        return [...prev, ...uniqueNew];
+                    });
+                }
             }
         } catch (err) {
             console.error("Error fetching libraries", err);

@@ -176,6 +176,10 @@ class SunoSongGeneratorStrategy(SongGeneratorStrategy):
 
             data = result.get("data")
 
+            # Handle case where data is a list (common in Suno API record-info)
+            if isinstance(data, list) and len(data) > 0:
+                data = data[0]
+
             if isinstance(data, dict):
                 suno_status = data.get("status", "PENDING")
 
@@ -186,6 +190,9 @@ class SunoSongGeneratorStrategy(SongGeneratorStrategy):
                     if suno_data_list and isinstance(suno_data_list[0], dict):
                         track_info = suno_data_list[0]
                         audio_url = track_info.get("audioUrl") or track_info.get("sourceAudioUrl")
+                    
+                    if not audio_url:
+                        audio_url = data.get("audioUrl") or data.get("audio_url") or data.get("sourceAudioUrl")
 
                     return {
                         "taskId": task_id,
