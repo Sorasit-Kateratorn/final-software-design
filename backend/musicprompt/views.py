@@ -42,6 +42,7 @@ class MusicPromptView(APIView):
         
             music_prompt = serializer.save() # save prompt
             task_id = result.get("taskId") # Extract taskId safely
+            print(f"[DEBUG] Received task_id {task_id} from Suno API")
             music = Music.objects.create(
             title=request.data.get("title"),
             genre=request.data.get("genre"),
@@ -127,18 +128,22 @@ class MusicPromptStatusView(APIView):
             )
 
         result_status = result.get("status")
+        print(f"[DEBUG] Polled status for task {task_id}: {result_status}")
 
         if result_status == "SUCCESS":
             music.status = Music.GenerationStatus.COMPLETED
             music.audio_url = result.get("audio_url")
             music.save()
+            print(f"[DEBUG] Saved SUCCESS for task {task_id}, audio_url: {music.audio_url}")
 
         elif result_status == "FAILED":
             music.status = Music.GenerationStatus.FAILED
             music.save()
+            print(f"[DEBUG] Saved FAILED for task {task_id}")
 
         else:
             music.status = Music.GenerationStatus.GENERATING
             music.save()
+            print(f"[DEBUG] Updated task {task_id} status to GENERATING")
 
         return Response(result, status=status.HTTP_200_OK)
